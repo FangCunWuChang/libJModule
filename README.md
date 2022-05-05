@@ -1,2 +1,2 @@
-# libJPlugin
-libJPlugin is a part of JMADF
+# libJModule
+libJModule is a part of JMADF
