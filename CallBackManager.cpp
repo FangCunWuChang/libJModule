@@ -1,11 +1,13 @@
 #include "CallBackManager.h"
 
-CallBackManager::CallBackManager()
-{
+namespace jmadf{
+	CallBackManager::CallBackManager()
+	{
 
-}
+	}
 
-CallBackManager::~CallBackManager()
-{
+	CallBackManager::~CallBackManager()
+	{
 
+	}
 }
