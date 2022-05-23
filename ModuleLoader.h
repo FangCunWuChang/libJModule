@@ -17,6 +17,7 @@ namespace jmadf {
 
 		static bool isLoaded(const juce::String& moduleId);
 		static bool isExists(const juce::String& moduleId);
+
 	private:
 		static const StaticInterface* pStaticInterface;
 
