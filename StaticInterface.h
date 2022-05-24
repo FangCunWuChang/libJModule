@@ -14,6 +14,10 @@ namespace jmadf {
 		bool (*isLoadedFunc)(const juce::String&) = nullptr;
 		bool (*isExistsFunc)(const juce::String&) = nullptr;
 
+		void (*raiseExceptionFunc)(const juce::String&) = nullptr;
+		const juce::String(*getExceptionFunc)() = nullptr;
+		void (*clearExceptionFunc)() = nullptr;
+
 	private:
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StaticInterface)
 	};

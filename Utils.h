@@ -1,4 +1,8 @@
 #pragma once
 #include <JuceHeader.h>
 
-const juce::String getComplieTime();
+namespace jmadf
+{
+	const juce::String getComplieTime();
+	const juce::String ptrToString(void* ptr);
+}

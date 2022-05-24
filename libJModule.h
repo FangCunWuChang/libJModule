@@ -21,17 +21,17 @@ void JModuleDestroyInstance(const jmadf::JModuleBase* p) \
 
 #define JModuleMSCInstance(className) \
 namespace jmadf { namespace inside { \
-	void __MSC::__InitStaticContainer(const ModuleInfo* ptrInfo) \
+	void __MSC::__InitStaticContainer() \
 	{ \
-		ModuleStaticContainer<className>::ptrInfo = ptrInfo; \
+		ModuleStaticContainer<className>::ptrInfo = std::make_unique<StaticProperties>(); \
 	} \
 	void __MSC::__DestoryStaticContainer() \
 	{ \
 		ModuleStaticContainer<className>::ptrInfo = nullptr; \
 	} \
-	const ModuleInfo* __MSC::__GetPtr() \
+	StaticProperties* __MSC::__GetPtr() \
 	{ \
-		return ModuleStaticContainer<className>::ptrInfo; \
+		return ModuleStaticContainer<className>::ptrInfo.get(); \
 	} \
 }} 
 
