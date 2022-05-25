@@ -3,6 +3,7 @@
 #include "ModuleStatics.h"
 #include "ModuleLoader.h"
 #include "Exceptions.h"
+#include "Interfaces.h"
 
 namespace jmadf
 {
@@ -23,10 +24,12 @@ namespace jmadf
 		{
 			ModuleLoader::init(staticInterface);
 			Exceptions::init(staticInterface);
+			Interfaces::init(staticInterface);
 		};
 		
 		void destoryLoader() override
 		{
+			Interfaces::destory();
 			Exceptions::destory();
 			ModuleLoader::destory();
 		};

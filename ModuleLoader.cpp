@@ -1,6 +1,8 @@
 #include "ModuleLoader.h"
+#include "ModuleStatics.h"
 
-namespace jmadf {
+namespace jmadf
+{
 	const StaticInterface* ModuleLoader::pStaticInterface = nullptr;
 
 	void ModuleLoader::init(const StaticInterface* pStaticInterface)
@@ -15,6 +17,10 @@ namespace jmadf {
 
 	bool ModuleLoader::load(const juce::String& moduleId)
 	{
+		if (ModuleStatics::getInfo()->ptrInfo->id == moduleId) {
+			jassertfalse;//Module couldn't load itself!
+			return false;
+		}
 		if (!ModuleLoader::pStaticInterface || !ModuleLoader::pStaticInterface->loadFunc)
 		{
 			return false;
@@ -24,6 +30,10 @@ namespace jmadf {
 	
 	void ModuleLoader::unload(const juce::String& moduleId)
 	{
+		if (ModuleStatics::getInfo()->ptrInfo->id == moduleId) {
+			jassertfalse;//Module couldn't unload itself!
+			return;
+		}
 		if (!ModuleLoader::pStaticInterface || !ModuleLoader::pStaticInterface->unloadFunc)
 		{
 			return;

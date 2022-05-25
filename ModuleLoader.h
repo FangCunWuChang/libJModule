@@ -2,7 +2,8 @@
 #include <JuceHeader.h>
 #include "StaticInterface.h"
 
-namespace jmadf {
+namespace jmadf
+{
 	class ModuleLoader final
 	{
 	public:

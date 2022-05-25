@@ -5,7 +5,8 @@
 
 class JModule;
 
-namespace jmadf {
+namespace jmadf
+{
 	//此类中内容会暴露至主程序，应严格注意
 	//请将必须实现的内容派生至jmadf::Module中实现
 	class JModuleBase
