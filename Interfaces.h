@@ -16,14 +16,17 @@ namespace jmadf
 
 		template<typename ...T, class F = std::function<void(const juce::String&, T...)>>
 		static void regInterface(
-			const juce::String& moduleId, const juce::String& key, const F& func
+			const juce::String& key, const F& func
 		)
 		{
 			if (!Interfaces::pStaticInterface || !Interfaces::pStaticInterface->getInterfaceFunc)
 			{
 				return;
 			}
-			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(moduleId);
+			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(
+				ModuleStatics::getInfo()->ptrInfo->id
+			);
+			
 			if (!pInterface) {
 				return;
 			}
@@ -44,6 +47,23 @@ namespace jmadf
 				return;
 			}
 			pInterface->call<T...>(ModuleStatics::getInfo()->ptrInfo->id, key, args...);
+		};
+
+		template<typename ...T>
+		requires jmadf::IsVoid<T...>
+		static void callInterface(
+			const juce::String& moduleId, const juce::String& key
+		)
+		{
+			if (!Interfaces::pStaticInterface || !Interfaces::pStaticInterface->getInterfaceFunc)
+			{
+				return;
+			}
+			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(moduleId);
+			if (!pInterface) {
+				return;
+			}
+			pInterface->call<T...>(ModuleStatics::getInfo()->ptrInfo->id, key);
 		};
 		
 	private:

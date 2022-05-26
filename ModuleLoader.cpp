@@ -58,4 +58,31 @@ namespace jmadf
 		}
 		return ModuleLoader::pStaticInterface->isExistsFunc(moduleId);
 	}
+
+	const juce::StringArray ModuleLoader::getAll()
+	{
+		if (!ModuleLoader::pStaticInterface || !ModuleLoader::pStaticInterface->getAllFunc)
+		{
+			return juce::StringArray();
+		}
+		return ModuleLoader::pStaticInterface->getAllFunc();
+	}
+	
+	const juce::StringArray ModuleLoader::getAllInGroup(const juce::String& groupName)
+	{
+		if (!ModuleLoader::pStaticInterface || !ModuleLoader::pStaticInterface->getAllInGroupFunc)
+		{
+			return juce::StringArray();
+		}
+		return ModuleLoader::pStaticInterface->getAllInGroupFunc(groupName);
+	}
+
+	const jmadf::ModuleInfo* ModuleLoader::find(const juce::String& moduleId)
+	{
+		if (!ModuleLoader::pStaticInterface || !ModuleLoader::pStaticInterface->findFunc)
+		{
+			return nullptr;
+		}
+		return ModuleLoader::pStaticInterface->findFunc(moduleId);
+	}
 }

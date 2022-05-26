@@ -1,6 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "StaticInterface.h"
+#include "ModuleInfo.h"
 
 namespace jmadf
 {
@@ -18,6 +19,11 @@ namespace jmadf
 
 		static bool isLoaded(const juce::String& moduleId);
 		static bool isExists(const juce::String& moduleId);
+
+		static const juce::StringArray getAll();
+		static const juce::StringArray getAllInGroup(const juce::String& groupName);
+
+		static const jmadf::ModuleInfo* find(const juce::String& moduleId);
 
 	private:
 		static const StaticInterface* pStaticInterface;

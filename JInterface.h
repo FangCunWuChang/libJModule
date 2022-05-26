@@ -1,31 +1,41 @@
 #pragma once
 #include <JuceHeader.h>
+#include "Arena.h"
 
-//½Ó¿Ú¹ÜÀíÆ÷£¬ÓÃÓÚ±£´æÄ£¿é×¢²áµÄ½Ó¿Ú
+//æ¥å£ç®¡ç†å™¨ï¼Œç”¨äºä¿å­˜æ¨¡å—æ³¨å†Œçš„æ¥å£
 
 namespace jmadf {
+	
+	template<typename ...T>
+	concept IsVoid = std::is_void_v<T...>;
+	
 	class JInterface final
 	{
 		class CallBackObjectBase
 		{
-			JUCE_LEAK_DETECTOR(CallBackObjectBase)
+		public :
+			CallBackObjectBase() = default;
+			virtual ~CallBackObjectBase() = default;
 		};
 
 		template<typename ...T>
 		class CallBackObject final :
-			private CallBackObjectBase
+			public CallBackObjectBase
 		{
 			using F = std::function<void(const juce::String&, T...)>;
 			F _data;
-			const juce::String _typename;
+			const char* _typename;
+			
 		public:
 			explicit CallBackObject(const F& data)
-				:_data(data), _typename(typeid(F).name())
-			{};
+			{
+				this->_data = data;
+				this->_typename = typeid(F).name();
+			};
 
 			const F& operator()()
 			{
-				if (this->_typename != typeid(F).name()) {
+				if (strcmp(this->_typename, typeid(F).name())) {
 					jassertfalse;//Interface args type isn't matched!
 					return [](const juce::String&, T...) {};
 				}
@@ -36,9 +46,36 @@ namespace jmadf {
 			{
 				return this->_typename;
 			};
+		};
 
-		private:
-			JUCE_LEAK_DETECTOR(CallBackObject)
+		template<>
+		class CallBackObject<void> final :
+			public CallBackObjectBase
+		{
+			using F = std::function<void(const juce::String&)>;
+			F _data;
+			const char* _typename;
+			
+		public:
+			explicit CallBackObject(const F& data)
+			{
+				this->_data = data;
+				this->_typename = typeid(F).name();
+			};
+
+			const F& operator()()
+			{
+				if (strcmp(this->_typename, typeid(F).name())) {
+					jassertfalse;//Interface args type isn't matched!
+					return [](const juce::String&) {};
+				}
+				return this->_data;
+			};
+
+			operator const juce::String& ()
+			{
+				return this->_typename;
+			};
 		};
 
 	public:
@@ -56,7 +93,7 @@ namespace jmadf {
 			this->_lock.enterWrite();
 			this->list.set(
 				key,
-				std::make_shared<U>(func)
+				new(this->arena->Allocate(sizeof(U))) U(func)
 			);
 			this->_lock.exitWrite();
 		};
@@ -66,15 +103,51 @@ namespace jmadf {
 		{
 			this->_lock.enterRead();
 			if (this->list.contains(key)) {
-				U* obj = reinterpret_cast<U*>(this->list.getReference(key).get());
+				U* obj = reinterpret_cast<U*>(this->list[key]);
 				const F& func = (*obj)();
 				func(caller, args...);
+			}
+			else {
+				jassertfalse;//Interface isn't exists!
+			}
+			this->_lock.exitRead();
+		};
+		
+		template<>
+		void set<void>(const juce::String& key, const std::function<void(const juce::String&)>& func)
+		{
+			using F = std::function<void(const juce::String&)>;
+			using U = JInterface::CallBackObject<void>;
+			
+			this->_lock.enterWrite();
+			this->list.set(
+				key,
+				new(this->arena->Allocate(sizeof(U))) U(func)
+			);
+			this->_lock.exitWrite();
+		};
+		
+		template<typename ...T>
+		requires IsVoid<T...>
+		void call(const juce::String& caller, const juce::String& key)
+		{
+			using F = std::function<void(const juce::String&)>;
+			using U = JInterface::CallBackObject<void>;
+			this->_lock.enterRead();
+			if (this->list.contains(key)) {
+				U* obj = reinterpret_cast<U*>(this->list[key]);
+				const F& func = (*obj)();
+				func(caller);
+			}
+			else {
+				jassertfalse;//Interface isn't exists!
 			}
 			this->_lock.exitRead();
 		};
 		
 	private:
-		juce::HashMap<juce::String, std::shared_ptr<CallBackObjectBase>> list;
+		std::unique_ptr<leveldb::Arena> arena = std::make_unique<leveldb::Arena>();
+		juce::HashMap<juce::String, CallBackObjectBase*> list;
 		juce::ReadWriteLock _lock;
 		
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JInterface)

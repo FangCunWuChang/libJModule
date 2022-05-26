@@ -1,6 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "JInterface.h"
+#include "ModuleInfo.h"
 
 namespace jmadf
 {
@@ -15,6 +16,11 @@ namespace jmadf
 
 		bool (*isLoadedFunc)(const juce::String&) = nullptr;
 		bool (*isExistsFunc)(const juce::String&) = nullptr;
+
+		const juce::StringArray (*getAllFunc)() = nullptr;
+		const juce::StringArray (*getAllInGroupFunc)(const juce::String&) = nullptr;
+
+		const jmadf::ModuleInfo* (*findFunc)(const juce::String&) = nullptr;
 
 		void (*raiseExceptionFunc)(const juce::String&) = nullptr;
 		const juce::String (*getExceptionFunc)() = nullptr;

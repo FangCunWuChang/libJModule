@@ -2,6 +2,7 @@
 #include "Macros.h"
 #include "Module.h"
 #include "ModuleStatics.h"
+#include "Methods.h"
 
 extern "C" JMExport jmadf::JModuleBase* JMCall JModuleCreateInstance();
 
