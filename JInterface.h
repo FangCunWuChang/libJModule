@@ -18,6 +18,7 @@ namespace jmadf {
 			virtual ~CallBackObjectBase() = default;
 		};
 
+		//在修改CallBackObject的成员前请确保成员不会在堆上分配空间，否则将会造成内存泄漏！
 		template<typename ...T>
 		class CallBackObject final :
 			public CallBackObjectBase
@@ -32,6 +33,8 @@ namespace jmadf {
 				this->_data = data;
 				this->_typename = typeid(F).name();
 			};
+
+			~CallBackObject() = default;
 
 			const F& operator()()
 			{
@@ -48,6 +51,7 @@ namespace jmadf {
 			};
 		};
 
+		//在修改CallBackObject的成员前请确保成员不会在堆上分配空间，否则将会造成内存泄漏！
 		template<>
 		class CallBackObject<void> final :
 			public CallBackObjectBase
@@ -63,6 +67,8 @@ namespace jmadf {
 				this->_typename = typeid(F).name();
 			};
 
+			~CallBackObject() = default;
+			
 			const F& operator()()
 			{
 				if (strcmp(this->_typename, typeid(F).name())) {

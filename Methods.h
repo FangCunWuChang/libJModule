@@ -44,4 +44,6 @@ namespace jmadf
 	{
 		Interfaces::callInterface<T...>(moduleId, key);
 	};
+
+	const ModuleInfo* GetModuleInfo();
 }

@@ -1,6 +1,7 @@
 #include "Methods.h"
 #include "ModuleLoader.h"
 #include "Exceptions.h"
+#include "ModuleStatics.h"
 
 namespace jmadf
 {
@@ -52,5 +53,10 @@ namespace jmadf
 	void ClearException()
 	{
 		Exceptions::clearException();
+	}
+
+	const ModuleInfo* GetModuleInfo()
+	{
+		return ModuleStatics::getInfo()->ptrInfo;
 	}
 }
