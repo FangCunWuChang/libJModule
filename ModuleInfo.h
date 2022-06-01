@@ -16,7 +16,7 @@ namespace jmadf
 		juce::String group;//"productName.groupName"
 		juce::String productId;//"{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}"
 		juce::String path;//"D:/xxxxxx/module/developer.moduleName"
-		juce::String entry;//"developer.moduleName.dll"
+		juce::String entry;//"developer.moduleName"
 		juce::String infoList;//"developer.moduleName.json"
 		juce::StringArray dependencies;//“¿¿µµƒid
 		juce::String description;//√Ë ˆ
