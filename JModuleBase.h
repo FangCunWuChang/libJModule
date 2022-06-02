@@ -20,7 +20,7 @@ namespace jmadf
 
 		virtual const juce::String getModuleName() = 0;
 		virtual const juce::String getModuleVersion() = 0;
-		const juce::String getModuleComplieTime();
+		const juce::String getModuleComplieTime(const juce::String& cDate = __DATE__, const juce::String& cTime = __TIME__);
 		
 	protected:
 		friend class ::JModule;

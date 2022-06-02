@@ -2,13 +2,21 @@
 
 namespace jmadf
 {
-	const juce::String getComplieTime()
+	const juce::String getComplieTime(const juce::String& cDate, const juce::String& cTime)
 	{
-		juce::String cDate(__DATE__), cTime(__TIME__);
 		juce::StringArray cDTS = juce::StringArray::fromTokens(cDate, " ", "");
+		cDTS.addArray(juce::StringArray::fromTokens(cTime, ":", ""));
+
+		for (int i = 0; i < cDTS.size();) {
+			if (cDTS[i].isEmpty()) {
+				cDTS.remove(i);
+				continue;
+			}
+			i++;
+		}
+		
 		cDTS.getReference(0).swapWith(cDTS.getReference(2));
 		cDTS.getReference(1).swapWith(cDTS.getReference(2));
-		cDTS.addArray(juce::StringArray::fromTokens(cTime, ":", ""));
 
 		const juce::StringArray mArray =
 		{ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };

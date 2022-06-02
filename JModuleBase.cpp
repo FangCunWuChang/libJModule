@@ -3,8 +3,8 @@
 
 namespace jmadf
 {
-	const juce::String JModuleBase::getModuleComplieTime()
+	const juce::String JModuleBase::getModuleComplieTime(const juce::String& cDate, const juce::String& cTime)
 	{
-		return getComplieTime();
+		return getComplieTime(cDate, cTime);
 	}
 }
