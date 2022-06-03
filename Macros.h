@@ -5,7 +5,7 @@
 #endif
 
 #ifdef __clang__
-#define JMExport __declspec(dllexport)
+#define JMExport __attribute__((visibility("default")))
 #endif
 
 #ifdef __GNUC__
