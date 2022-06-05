@@ -26,6 +26,7 @@ namespace jmadf {
 			using F = std::function<void(const juce::String&, T...)>;
 			F _data;
 			const char* _typename;
+			const F _empty = [](const juce::String&, T...) {};
 			
 		public:
 			explicit CallBackObject(const F& data)
@@ -40,7 +41,7 @@ namespace jmadf {
 			{
 				if (strcmp(this->_typename, typeid(F).name())) {
 					jassertfalse;//Interface args type isn't matched!
-					return [](const juce::String&, T...) {};
+					return this->_empty;
 				}
 				return this->_data;
 			};
@@ -59,6 +60,7 @@ namespace jmadf {
 			using F = std::function<void(const juce::String&)>;
 			F _data;
 			const char* _typename;
+			const F _empty = [](const juce::String&) {};
 			
 		public:
 			explicit CallBackObject(const F& data)
@@ -73,7 +75,7 @@ namespace jmadf {
 			{
 				if (strcmp(this->_typename, typeid(F).name())) {
 					jassertfalse;//Interface args type isn't matched!
-					return [](const juce::String&) {};
+					return this->_empty;
 				}
 				return this->_data;
 			};
