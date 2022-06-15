@@ -13,8 +13,22 @@ namespace jmadf
 
 		static void init(const StaticInterface* pStaticInterface);
 		static void destory();
+		
+		static const StaticInterface* pStaticInterface;
 
-		template<typename ...T, class F = std::function<void(const juce::String&, T...)>>
+	private:
+		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Interfaces)
+	};
+
+	template<typename ...T>
+	class InterfacesDao final
+	{
+		using F = std::function<void(const juce::String&, T...)>;
+
+		InterfacesDao() = delete;
+		~InterfacesDao() = delete;
+
+	public:
 		static void regInterface(
 			const juce::String& key, const F& func
 		)
@@ -26,14 +40,13 @@ namespace jmadf
 			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(
 				ModuleStatics::getInfo()->ptrInfo->id
 			);
-			
+
 			if (!pInterface) {
 				return;
 			}
-			pInterface->set<T...>(key, func);
+			JInterfaceDao<T...>::set(pInterface, key, func);
 		};
-		
-		template<typename ...T>
+
 		static void callInterface(
 			const juce::String& moduleId, const juce::String& key, T... args
 		)
@@ -46,11 +59,37 @@ namespace jmadf
 			if (!pInterface) {
 				return;
 			}
-			pInterface->call<T...>(ModuleStatics::getInfo()->ptrInfo->id, key, args...);
+			JInterfaceDao<T...>::call(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key, args...);
+		};
+	};
+
+	template<>
+	class InterfacesDao<void> final
+	{
+		using F = std::function<void(const juce::String&)>;
+
+		InterfacesDao() = delete;
+		~InterfacesDao() = delete;
+
+	public:
+		static void regInterface(
+			const juce::String& key, const F& func
+		)
+		{
+			if (!Interfaces::pStaticInterface || !Interfaces::pStaticInterface->getInterfaceFunc)
+			{
+				return;
+			}
+			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(
+				ModuleStatics::getInfo()->ptrInfo->id
+			);
+
+			if (!pInterface) {
+				return;
+			}
+			JInterfaceDao<void>::set(pInterface, key, func);
 		};
 
-		template<typename ...T>
-		requires jmadf::IsVoid<T...>
 		static void callInterface(
 			const juce::String& moduleId, const juce::String& key
 		)
@@ -63,12 +102,7 @@ namespace jmadf
 			if (!pInterface) {
 				return;
 			}
-			pInterface->call<T...>(ModuleStatics::getInfo()->ptrInfo->id, key);
+			JInterfaceDao<void>::call(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key);
 		};
-		
-	private:
-		static const StaticInterface* pStaticInterface;
-
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Interfaces)
 	};
 }

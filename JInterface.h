@@ -5,15 +5,10 @@
 //接口管理器，用于保存模块注册的接口
 
 namespace jmadf {
-	
-	template<typename ...T>
-	concept IsVoid = std::is_void_v<T...>;
-	
-	class JInterface final
-	{
+	namespace inside {
 		class CallBackObjectBase
 		{
-		public :
+		public:
 			CallBackObjectBase() = default;
 			virtual ~CallBackObjectBase() = default;
 		};
@@ -27,7 +22,7 @@ namespace jmadf {
 			F _data;
 			const char* _typename;
 			const F _empty = [](const juce::String&, T...) {};
-			
+
 		public:
 			explicit CallBackObject(const F& data)
 			{
@@ -45,8 +40,8 @@ namespace jmadf {
 				}
 				return this->_data;
 			};
-			
-			operator const juce::String&()
+
+			const char* type()
 			{
 				return this->_typename;
 			};
@@ -61,7 +56,7 @@ namespace jmadf {
 			F _data;
 			const char* _typename;
 			const F _empty = [](const juce::String&) {};
-			
+
 		public:
 			explicit CallBackObject(const F& data)
 			{
@@ -70,7 +65,7 @@ namespace jmadf {
 			};
 
 			~CallBackObject() = default;
-			
+
 			const F& operator()()
 			{
 				if (strcmp(this->_typename, typeid(F).name())) {
@@ -80,12 +75,15 @@ namespace jmadf {
 				return this->_data;
 			};
 
-			operator const juce::String& ()
+			const char* type()
 			{
 				return this->_typename;
 			};
 		};
-
+	}
+	
+	class JInterface final
+	{
 	public:
 		JInterface() = default;
 		~JInterface()
@@ -95,69 +93,82 @@ namespace jmadf {
 			this->_lock.exitWrite();
 		};
 
-		template<typename ...T, class F = std::function<void(const juce::String&, T...)>, class U = JInterface::CallBackObject<T...>>
-		void set(const juce::String& key, const F& func)
+	public:
+		std::unique_ptr<leveldb::Arena> arena = std::make_unique<leveldb::Arena>();
+		juce::HashMap<juce::String, inside::CallBackObjectBase*> list;
+		juce::ReadWriteLock _lock;
+
+	private:
+		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JInterface)
+	};
+	
+	template<typename ...T>
+	class JInterfaceDao final
+	{
+		using F = std::function<void(const juce::String&, T...)>;
+		using U = inside::CallBackObject<T...>;
+
+		JInterfaceDao() = delete;
+		~JInterfaceDao() = delete;
+
+	public:
+		static void set(JInterface* instance, const juce::String& key, const F& func)
 		{
-			this->_lock.enterWrite();
-			this->list.set(
+			instance->_lock.enterWrite();
+			instance->list.set(
 				key,
-				new(this->arena->Allocate(sizeof(U))) U(func)
+				new(instance->arena->Allocate(sizeof(U))) U(func)
 			);
-			this->_lock.exitWrite();
+			instance->_lock.exitWrite();
 		};
 
-		template<typename ...T, class F = std::function<void(const juce::String&, T...)>, class U = JInterface::CallBackObject<T...>>
-		void call(const juce::String& caller, const juce::String& key, T ...args)
+		static void call(JInterface* instance, const juce::String& caller, const juce::String& key, T ...args)
 		{
-			this->_lock.enterRead();
-			if (this->list.contains(key)) {
-				U* obj = reinterpret_cast<U*>(this->list[key]);
+			instance->_lock.enterRead();
+			if (instance->list.contains(key)) {
+				U* obj = reinterpret_cast<U*>(instance->list[key]);
 				const F& func = (*obj)();
 				func(caller, args...);
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
 			}
-			this->_lock.exitRead();
+			instance->_lock.exitRead();
 		};
-		
-		template<>
-		void set<void>(const juce::String& key, const std::function<void(const juce::String&)>& func)
+	};
+
+	template<>
+	class JInterfaceDao<void> final
+	{
+		using F = std::function<void(const juce::String&)>;
+		using U = inside::CallBackObject<void>;
+
+		JInterfaceDao() = delete;
+		~JInterfaceDao() = delete;
+
+	public:
+		static void set(JInterface* instance, const juce::String& key, const F& func)
 		{
-			using F = std::function<void(const juce::String&)>;
-			using U = JInterface::CallBackObject<void>;
-			
-			this->_lock.enterWrite();
-			this->list.set(
+			instance->_lock.enterWrite();
+			instance->list.set(
 				key,
-				new(this->arena->Allocate(sizeof(U))) U(func)
+				new(instance->arena->Allocate(sizeof(U))) U(func)
 			);
-			this->_lock.exitWrite();
+			instance->_lock.exitWrite();
 		};
-		
-		template<typename ...T>
-		requires IsVoid<T...>
-		void call(const juce::String& caller, const juce::String& key)
+
+		static void call(JInterface* instance, const juce::String& caller, const juce::String& key)
 		{
-			using F = std::function<void(const juce::String&)>;
-			using U = JInterface::CallBackObject<void>;
-			this->_lock.enterRead();
-			if (this->list.contains(key)) {
-				U* obj = reinterpret_cast<U*>(this->list[key]);
+			instance->_lock.enterRead();
+			if (instance->list.contains(key)) {
+				U* obj = reinterpret_cast<U*>(instance->list[key]);
 				const F& func = (*obj)();
 				func(caller);
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
 			}
-			this->_lock.exitRead();
+			instance->_lock.exitRead();
 		};
-		
-	private:
-		std::unique_ptr<leveldb::Arena> arena = std::make_unique<leveldb::Arena>();
-		juce::HashMap<juce::String, CallBackObjectBase*> list;
-		juce::ReadWriteLock _lock;
-		
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JInterface)
 	};
 }

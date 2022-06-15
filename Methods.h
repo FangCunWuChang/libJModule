@@ -25,7 +25,7 @@ namespace jmadf
 		const juce::String& key, const F& func
 	)
 	{
-		Interfaces::regInterface<T...>(key, func);
+		InterfacesDao<T...>::regInterface(key, func);
 	};
 
 	template<typename ...T>
@@ -33,16 +33,16 @@ namespace jmadf
 		const juce::String& moduleId, const juce::String& key, T... args
 	)
 	{
-		Interfaces::callInterface<T...>(moduleId, key, args...);
+		InterfacesDao<T...>::callInterface(moduleId, key, args...);
 	};
 
 	template<typename ...T>
-	requires IsVoid<T...>
+	requires std::is_void_v<T...>
 	void CallInterface(
 		const juce::String& moduleId, const juce::String& key
 	)
 	{
-		Interfaces::callInterface<T...>(moduleId, key);
+		InterfacesDao<T...>::callInterface(moduleId, key);
 	};
 
 	const ModuleInfo* GetModuleInfo();
