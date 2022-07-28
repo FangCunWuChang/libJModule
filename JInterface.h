@@ -83,14 +83,14 @@ namespace jmadf {
 		~JInterface()
 		{
 			juce::ScopedWriteLock locker(this->_lock);
-			for (auto& i : this->list) {
+			for (auto& i : this->_list) {
 				delete i.second;
 			}
-			this->list.clear();
+			this->_list.clear();
 		};
 
 	public:
-		std::map<juce::String, inside::CallBackObjectBase*> list;
+		std::map<juce::String, inside::CallBackObjectBase*> _list;
 		juce::ReadWriteLock _lock;
 	};//接口管理类
 	
@@ -107,14 +107,14 @@ namespace jmadf {
 		static void set(JInterface* instance, const juce::String& key, const F& func)
 		{
 			juce::ScopedWriteLock locker(instance->_lock);
-			instance->list[key] = new U(func);
+			instance->_list[key] = new U(func);
 		};
 
 		static void call(JInterface* instance, const juce::String& caller, const juce::String& key, T ...args)
 		{
 			juce::ScopedReadLock locker(instance->_lock);
-			if (instance->list.contains(key)) {
-				U* obj = reinterpret_cast<U*>(instance->list[key]);
+			if (instance->_list.contains(key)) {
+				U* obj = reinterpret_cast<U*>(instance->_list[key]);
 				const F& func = (*obj)();
 				func(caller, args...);
 			}
@@ -137,14 +137,14 @@ namespace jmadf {
 		static void set(JInterface* instance, const juce::String& key, const F& func)
 		{
 			juce::ScopedWriteLock locker(instance->_lock);
-			instance->list[key] = new U(func);
+			instance->_list[key] = new U(func);
 		};
 
 		static void call(JInterface* instance, const juce::String& caller, const juce::String& key)
 		{
 			juce::ScopedReadLock locker(instance->_lock);
-			if (instance->list.contains(key)) {
-				U* obj = reinterpret_cast<U*>(instance->list[key]);
+			if (instance->_list.contains(key)) {
+				U* obj = reinterpret_cast<U*>(instance->_list[key]);
 				const F& func = (*obj)();
 				func(caller);
 			}
