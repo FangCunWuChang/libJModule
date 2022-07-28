@@ -30,7 +30,7 @@ namespace jmadf {
 				this->_typename = typeid(F).name();
 			};
 
-			~CallBackObject() = default;
+			~CallBackObject() override = default;
 
 			const F& operator()()
 			{
@@ -64,7 +64,7 @@ namespace jmadf {
 				this->_typename = typeid(F).name();
 			};
 
-			~CallBackObject() = default;
+			~CallBackObject() override = default;
 
 			const F& operator()()
 			{
