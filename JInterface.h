@@ -1,6 +1,5 @@
 #pragma once
 #include <JuceHeader.h>
-#include "Arena.h"
 
 //接口管理器，用于保存模块注册的接口
 
@@ -10,25 +9,23 @@ namespace jmadf {
 		{
 		public:
 			CallBackObjectBase() = default;
-			virtual ~CallBackObjectBase() = default;
-		};
+			virtual ~CallBackObjectBase() = 0;
+			virtual const char* type() = 0;
+		};//所有接口类的共同基类，便于脱离模板储存
 
-		//在修改CallBackObject的成员前请确保成员不会在堆上分配空间，否则将会造成内存泄漏！
 		template<typename ...T>
 		class CallBackObject final :
 			public CallBackObjectBase
 		{
 			using F = std::function<void(const juce::String&, T...)>;
-			F _data;
+			const F _data;
 			const char* _typename;
 			const F _empty = [](const juce::String&, T...) {};
 
 		public:
 			explicit CallBackObject(const F& data)
-			{
-				this->_data = data;
-				this->_typename = typeid(F).name();
-			};
+				:_data(data), _typename(typeid(F).name())
+			{};
 
 			~CallBackObject() override = default;
 
@@ -41,28 +38,25 @@ namespace jmadf {
 				return this->_data;
 			};
 
-			const char* type()
+			const char* type() override
 			{
 				return this->_typename;
 			};
-		};
+		};//常态化接口类
 
-		//在修改CallBackObject的成员前请确保成员不会在堆上分配空间，否则将会造成内存泄漏！
 		template<>
 		class CallBackObject<void> final :
 			public CallBackObjectBase
 		{
 			using F = std::function<void(const juce::String&)>;
-			F _data;
+			const F _data;
 			const char* _typename;
 			const F _empty = [](const juce::String&) {};
 
 		public:
 			explicit CallBackObject(const F& data)
-			{
-				this->_data = data;
-				this->_typename = typeid(F).name();
-			};
+				:_data(data), _typename(typeid(F).name())
+			{};
 
 			~CallBackObject() override = default;
 
@@ -75,11 +69,11 @@ namespace jmadf {
 				return this->_data;
 			};
 
-			const char* type()
+			const char* type() override
 			{
 				return this->_typename;
 			};
-		};
+		};//void类型特化接口类
 	}
 	
 	class JInterface final
@@ -88,19 +82,17 @@ namespace jmadf {
 		JInterface() = default;
 		~JInterface()
 		{
-			this->_lock.enterWrite();
+			juce::ScopedWriteLock locker(this->_lock);
+			for (auto& i : this->list) {
+				delete i.second;
+			}
 			this->list.clear();
-			this->_lock.exitWrite();
 		};
 
 	public:
-		std::unique_ptr<leveldb::Arena> arena = std::make_unique<leveldb::Arena>();
-		juce::HashMap<juce::String, inside::CallBackObjectBase*> list;
+		std::map<juce::String, inside::CallBackObjectBase*> list;
 		juce::ReadWriteLock _lock;
-
-	private:
-		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JInterface)
-	};
+	};//接口管理类
 	
 	template<typename ...T>
 	class JInterfaceDao final
@@ -114,17 +106,13 @@ namespace jmadf {
 	public:
 		static void set(JInterface* instance, const juce::String& key, const F& func)
 		{
-			instance->_lock.enterWrite();
-			instance->list.set(
-				key,
-				new(instance->arena->Allocate(sizeof(U))) U(func)
-			);
-			instance->_lock.exitWrite();
+			juce::ScopedWriteLock locker(instance->_lock);
+			instance->list[key] = new U(func);
 		};
 
 		static void call(JInterface* instance, const juce::String& caller, const juce::String& key, T ...args)
 		{
-			instance->_lock.enterRead();
+			juce::ScopedReadLock locker(instance->_lock);
 			if (instance->list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->list[key]);
 				const F& func = (*obj)();
@@ -133,9 +121,8 @@ namespace jmadf {
 			else {
 				jassertfalse;//Interface isn't exists!
 			}
-			instance->_lock.exitRead();
 		};
-	};
+	};//常态化接口数据访问对象
 
 	template<>
 	class JInterfaceDao<void> final
@@ -149,17 +136,13 @@ namespace jmadf {
 	public:
 		static void set(JInterface* instance, const juce::String& key, const F& func)
 		{
-			instance->_lock.enterWrite();
-			instance->list.set(
-				key,
-				new(instance->arena->Allocate(sizeof(U))) U(func)
-			);
-			instance->_lock.exitWrite();
+			juce::ScopedWriteLock locker(instance->_lock);
+			instance->list[key] = new U(func);
 		};
 
 		static void call(JInterface* instance, const juce::String& caller, const juce::String& key)
 		{
-			instance->_lock.enterRead();
+			juce::ScopedReadLock locker(instance->_lock);
 			if (instance->list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->list[key]);
 				const F& func = (*obj)();
@@ -168,7 +151,6 @@ namespace jmadf {
 			else {
 				jassertfalse;//Interface isn't exists!
 			}
-			instance->_lock.exitRead();
 		};
-	};
+	};//void类型特化数据访问对象
 }

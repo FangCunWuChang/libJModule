@@ -33,5 +33,10 @@ namespace jmadf
 			Exceptions::destory();
 			ModuleLoader::destory();
 		};
+
+		void destoryInterfaces(JInterface* interfaces) override
+		{
+			delete interfaces;
+		};
 	};
 }

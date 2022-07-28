@@ -30,6 +30,8 @@ namespace jmadf
 
 		virtual void initLoader(const StaticInterface* staticInterface) = 0;
 		virtual void destoryLoader() = 0;
+
+		virtual void destoryInterfaces(JInterface* interfaces) = 0;
 		
 	private:
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(JModuleBase)
