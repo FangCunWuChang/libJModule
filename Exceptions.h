@@ -2,6 +2,8 @@
 #include <JuceHeader.h>
 #include "StaticInterface.h"
 
+//提供给模块内部的异常类
+
 namespace jmadf
 {
 	class Exceptions final

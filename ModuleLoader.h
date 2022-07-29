@@ -3,6 +3,8 @@
 #include "StaticInterface.h"
 #include "ModuleInfo.h"
 
+//提供给模块内部的模块调度类
+
 namespace jmadf
 {
 	class ModuleLoader final

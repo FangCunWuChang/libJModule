@@ -25,7 +25,8 @@ namespace jmadf
 		{
 			return false;
 		}
-		return ModuleLoader::pStaticInterface->loadFunc(moduleId);
+		return ModuleLoader::pStaticInterface->loadFunc(
+			ModuleStatics::getInfo()->ptrInfo->id, moduleId);
 	}
 	
 	void ModuleLoader::unload(const juce::String& moduleId)
@@ -38,7 +39,7 @@ namespace jmadf
 		{
 			return;
 		}
-		ModuleLoader::pStaticInterface->unloadFunc(moduleId);
+		ModuleLoader::pStaticInterface->unloadFunc(ModuleStatics::getInfo()->ptrInfo->id, moduleId);
 	}
 
 	bool ModuleLoader::isLoaded(const juce::String& moduleId)

@@ -3,6 +3,8 @@
 #include "JInterface.h"
 #include "ModuleInfo.h"
 
+//传入给模块的框架功能接口
+
 namespace jmadf
 {
 	class StaticInterface final
@@ -11,8 +13,8 @@ namespace jmadf
 		StaticInterface() = default;
 		~StaticInterface() = default;
 
-		bool (*loadFunc)(const juce::String&) = nullptr;
-		void (*unloadFunc)(const juce::String&) = nullptr;
+		bool (*loadFunc)(const juce::String&, const juce::String&) = nullptr;
+		void (*unloadFunc)(const juce::String&, const juce::String&) = nullptr;
 
 		bool (*isLoadedFunc)(const juce::String&) = nullptr;
 		bool (*isExistsFunc)(const juce::String&) = nullptr;

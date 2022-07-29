@@ -3,6 +3,8 @@
 #include "StaticInterface.h"
 #include "ModuleStatics.h"
 
+//提供给模块内部的接口管理类
+
 namespace jmadf
 {
 	class Interfaces final

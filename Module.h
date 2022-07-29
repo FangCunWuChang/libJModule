@@ -5,6 +5,9 @@
 #include "Exceptions.h"
 #include "Interfaces.h"
 
+//所有模块类的共同基类，但不会对JMADF主程序暴露
+//在这里编写模块共有的接口，但需要对不同模块进行特异化的部分
+
 namespace jmadf
 {
 	class Module : public JModuleBase

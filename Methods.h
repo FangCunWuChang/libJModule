@@ -3,6 +3,8 @@
 #include "ModuleInfo.h"
 #include "Interfaces.h"
 
+//对模块开放的接口，推荐在模块里使用这些接口使用框架功能
+
 namespace jmadf
 {
 	bool LoadModule(const juce::String& moduleId);

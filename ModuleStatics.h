@@ -2,6 +2,8 @@
 #include "JModuleBase.h"
 #include "StaticProperties.h"
 
+//使用模板隔离模块具有特异化的静态信息
+
 namespace jmadf
 {	
 	class ModuleStatics;

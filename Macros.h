@@ -1,5 +1,7 @@
 #pragma once
 
+//平台和编译器相关的宏定义
+
 #ifdef _MSC_VER
 #define JMExport __declspec(dllexport)
 #define JMCall _cdecl

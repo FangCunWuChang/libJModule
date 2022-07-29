@@ -3,6 +3,8 @@
 #include "StaticInterface.h"
 #include "ModuleInfo.h"
 
+//所有模块类的共同基类，同时提供模块管理相关的接口
+
 class JModule;
 
 namespace jmadf

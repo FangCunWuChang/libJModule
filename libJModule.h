@@ -4,6 +4,10 @@
 #include "ModuleStatics.h"
 #include "Methods.h"
 
+//声明模块的实例创建与销毁函数，这些函数会被暴露于模块文件用于系统加载模块
+//这些函数是JMADF模块的入口点
+//提供相关函数的实现宏
+
 extern "C" JMExport jmadf::JModuleBase* JMCall JModuleCreateInstance();
 
 extern "C" JMExport void JMCall JModuleDestroyInstance(const jmadf::JModuleBase* pInstance);
