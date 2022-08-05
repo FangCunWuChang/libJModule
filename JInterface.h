@@ -110,17 +110,23 @@ namespace jmadf {
 			instance->_list[key] = new U(func);
 		};
 
-		static void call(JInterface* instance, const juce::String& caller, const juce::String& key, T ...args)
+		static const std::function<void(T...)> get(JInterface* instance, const juce::String& caller, const juce::String& key)
 		{
 			juce::ScopedReadLock locker(instance->_lock);
 			if (instance->_list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->_list[key]);
 				const F& func = (*obj)();
-				func(caller, args...);
+				return [caller, func](T... args) {func(caller, args...); };
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
+				return [](T...) {};
 			}
+		};
+
+		static void call(JInterface* instance, const juce::String& caller, const juce::String& key, T ...args)
+		{
+			JInterfaceDao<T...>::get(instance, caller, key)(args...);
 		};
 	};//常态化接口数据访问对象
 
@@ -140,17 +146,23 @@ namespace jmadf {
 			instance->_list[key] = new U(func);
 		};
 
-		static void call(JInterface* instance, const juce::String& caller, const juce::String& key)
+		static const std::function<void(void)> get(JInterface* instance, const juce::String& caller, const juce::String& key)
 		{
 			juce::ScopedReadLock locker(instance->_lock);
 			if (instance->_list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->_list[key]);
 				const F& func = (*obj)();
-				func(caller);
+				return [caller, func] {func(caller); };
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
+				return [] {};
 			}
+		};
+
+		static void call(JInterface* instance, const juce::String& caller, const juce::String& key)
+		{
+			JInterfaceDao<void>::get(instance, caller, key)();
 		};
 	};//void类型特化数据访问对象
 }

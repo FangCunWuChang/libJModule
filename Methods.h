@@ -31,6 +31,14 @@ namespace jmadf
 	};
 
 	template<typename ...T>
+	const std::function<void(T...)> GetInterface(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		return InterfacesDao<T...>::getInterface(moduleId, key);
+	};
+
+	template<typename ...T>
 	void CallInterface(
 		const juce::String& moduleId, const juce::String& key, T... args
 	)

@@ -49,6 +49,21 @@ namespace jmadf
 			JInterfaceDao<T...>::set(pInterface, key, func);
 		};
 
+		static const std::function<void(T...)> getInterface(
+			const juce::String& moduleId, const juce::String& key
+		)
+		{
+			if (!Interfaces::pStaticInterface || !Interfaces::pStaticInterface->getInterfaceFunc)
+			{
+				return [](T...) {};
+			}
+			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(moduleId);
+			if (!pInterface) {
+				return [](T...) {};
+			}
+			return JInterfaceDao<T...>::get(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key);
+		};
+
 		static void callInterface(
 			const juce::String& moduleId, const juce::String& key, T... args
 		)
@@ -90,6 +105,21 @@ namespace jmadf
 				return;
 			}
 			JInterfaceDao<void>::set(pInterface, key, func);
+		};
+
+		static const std::function<void(void)> getInterface(
+			const juce::String& moduleId, const juce::String& key
+		)
+		{
+			if (!Interfaces::pStaticInterface || !Interfaces::pStaticInterface->getInterfaceFunc)
+			{
+				return [] {};
+			}
+			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(moduleId);
+			if (!pInterface) {
+				return [] {};
+			}
+			return JInterfaceDao<void>::get(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key);
 		};
 
 		static void callInterface(
