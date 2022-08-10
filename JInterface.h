@@ -116,7 +116,7 @@ namespace jmadf {
 			if (instance->_list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->_list[key]);
 				const F& func = (*obj)();
-				return [caller, func](T... args) {func(caller, args...); };
+				return [&caller, &func](T... args) {func(caller, args...); };
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
@@ -152,7 +152,7 @@ namespace jmadf {
 			if (instance->_list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->_list[key]);
 				const F& func = (*obj)();
-				return [caller, func] {func(caller); };
+				return [&caller, &func] {func(caller); };
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
