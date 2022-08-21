@@ -9,15 +9,15 @@
 
 #ifdef __clang__
 #define JMExport __attribute__((visibility("default")))
-#define JMCalll __attribute__((cdecl))
+#define JMCall
 #endif
 
 #ifdef __GNUC__
 #define JMExport __attribute__((visibility("default")))
-#define JMCall __attribute__((cdecl))
+#define JMCall
 #endif
 
 #if ! (defined (_MSC_VER) || defined (__clang__) || defined (__GNUC__))
 #define JMExport 
-#define JMCall _cdecl
+#define JMCall
 #endif
