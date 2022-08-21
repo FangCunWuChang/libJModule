@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "JModuleBase.h"
 #include "ModuleStatics.h"
 #include "ModuleLoader.h"

@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 #include <JuceHeader.h>
 
-//Ò»Ð©»ù´¡µÄ·½·¨ÊµÏÖ
+//ä¸€äº›åŸºç¡€çš„æ–¹æ³•å®žçŽ°
 
 namespace jmadf
 {

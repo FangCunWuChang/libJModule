@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <JuceHeader.h>
 
 //接口管理器，用于保存模块注册的接口

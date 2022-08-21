@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 //平台和编译器相关的宏定义
 

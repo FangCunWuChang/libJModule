@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <JuceHeader.h>
 #include "StaticInterface.h"
 #include "ModuleInfo.h"

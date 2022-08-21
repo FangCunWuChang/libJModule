@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 #include <JuceHeader.h>
 
-//Ä£¿éĞÅÏ¢
+//æ¨¡å—ä¿¡æ¯
 
 namespace jmadf
 {
@@ -18,8 +18,8 @@ namespace jmadf
 		juce::String path;//"D:/xxxxxx/module/developer.moduleName"
 		juce::String entry;//"developer.moduleName"
 		juce::String infoList;//"developer.moduleName.json"
-		juce::StringArray dependencies;//ÒÀÀµµÄid
-		juce::String description;//ÃèÊö
+		juce::StringArray dependencies;//ä¾èµ–çš„id
+		juce::String description;//æè¿°
 
 	private:
 		JUCE_LEAK_DETECTOR(ModuleInfo)
