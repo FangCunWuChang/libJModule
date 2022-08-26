@@ -37,6 +37,13 @@ namespace jmadf
 	{
 		return InterfacesDao<T...>::getInterface(moduleId, key);
 	};
+	template<typename ...T>
+	bool CheckInterface(
+		const juce::String& moduleId, const juce::String& key
+	)
+	{
+		return InterfacesDao<T...>::checkInterface(moduleId, key);
+	};
 
 	template<typename ...T>
 	void CallInterface(

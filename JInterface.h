@@ -123,6 +123,21 @@ namespace jmadf {
 				return [](T...) {};
 			}
 		};
+		static bool check(JInterface* instance, const juce::String& key)
+		{
+			juce::ScopedReadLock locker(instance->_lock);
+			if (instance->_list.contains(key)) {
+				U* obj = reinterpret_cast<U*>(instance->_list[key]);
+				using F = std::function<void(const juce::String&, T...)>;
+				if (std::strcmp(obj->type(), typeid(F).name()) == 0) {
+					return true;
+				}
+				jassertfalse;//类型不匹配
+				return false;
+			}
+			jassertfalse;//未找到同名接口
+			return false;
+		};
 
 		static void call(JInterface* instance, const juce::String& caller, const juce::String& key, T ...args)
 		{
@@ -158,6 +173,21 @@ namespace jmadf {
 				jassertfalse;//Interface isn't exists!
 				return [] {};
 			}
+		};
+		static bool check(JInterface* instance, const juce::String& key)
+		{
+			juce::ScopedReadLock locker(instance->_lock);
+			if (instance->_list.contains(key)) {
+				U* obj = reinterpret_cast<U*>(instance->_list[key]);
+				using F = std::function<void(const juce::String&)>;
+				if (std::strcmp(obj->type(), typeid(F).name()) == 0) {
+					return true;
+				}
+				jassertfalse;//类型不匹配
+				return false;
+			}
+			jassertfalse;//未找到同名接口
+			return false;
 		};
 
 		static void call(JInterface* instance, const juce::String& caller, const juce::String& key)

@@ -63,6 +63,20 @@ namespace jmadf
 			}
 			return JInterfaceDao<T...>::get(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key);
 		};
+		static bool checkInterface(
+			const juce::String& moduleId, const juce::String& key
+		)
+		{
+			if (!Interfaces::pStaticInterface || !Interfaces::pStaticInterface->getInterfaceFunc)
+			{
+				return false;
+			}
+			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(moduleId);
+			if (!pInterface) {
+				return false;
+			}
+			return JInterfaceDao<T...>::check(pInterface, key);
+		};
 
 		static void callInterface(
 			const juce::String& moduleId, const juce::String& key, T... args
@@ -120,6 +134,20 @@ namespace jmadf
 				return [] {};
 			}
 			return JInterfaceDao<void>::get(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key);
+		};
+		static bool checkInterface(
+			const juce::String& moduleId, const juce::String& key
+		)
+		{
+			if (!Interfaces::pStaticInterface || !Interfaces::pStaticInterface->getInterfaceFunc)
+			{
+				return false;
+			}
+			JInterface* pInterface = Interfaces::pStaticInterface->getInterfaceFunc(moduleId);
+			if (!pInterface) {
+				return false;
+			}
+			return JInterfaceDao<void>::check(pInterface, key);
 		};
 
 		static void callInterface(
