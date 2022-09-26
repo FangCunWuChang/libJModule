@@ -50,7 +50,7 @@ namespace jmadf
 		const juce::String& moduleId, const juce::String& key, T... args
 	)
 	{
-		InterfacesDao<T...>::callInterface(moduleId, key, args...);
+		InterfacesDao<T...>::callInterface(moduleId, key, std::forward<T>(args)...);
 	};
 
 	template<typename ...T>

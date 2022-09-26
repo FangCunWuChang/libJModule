@@ -20,7 +20,6 @@ namespace jmadf {
 			using F = std::function<void(const juce::String&, T...)>;
 			const F _data;
 			const char* _typename;
-			const F _empty = [](const juce::String&, T...) {};
 
 		public:
 			explicit CallBackObject(const F& data)
@@ -29,11 +28,12 @@ namespace jmadf {
 
 			~CallBackObject() override = default;
 
-			const F& operator()()
+			const F& get()
 			{
-				if (strcmp(this->_typename, typeid(F).name())) {
+				if (strcmp(this->_typename, typeid(F).name()) != 0) {
 					jassertfalse;//Interface args type isn't matched!
-					return this->_empty;
+					static F _empty = [](const juce::String&, T...) {};
+					return _empty;
 				}
 				return this->_data;
 			};
@@ -51,7 +51,7 @@ namespace jmadf {
 			using F = std::function<void(const juce::String&)>;
 			const F _data;
 			const char* _typename;
-			const F _empty = [](const juce::String&) {};
+			const F _empty;
 
 		public:
 			explicit CallBackObject(const F& data)
@@ -60,11 +60,12 @@ namespace jmadf {
 
 			~CallBackObject() override = default;
 
-			const F& operator()()
+			const F& get()
 			{
-				if (strcmp(this->_typename, typeid(F).name())) {
+				if (strcmp(this->_typename, typeid(F).name()) != 0) {
 					jassertfalse;//Interface args type isn't matched!
-					return this->_empty;
+					static F _empty = [](const juce::String&) {};
+					return _empty;
 				}
 				return this->_data;
 			};
@@ -115,8 +116,8 @@ namespace jmadf {
 			juce::ScopedReadLock locker(instance->_lock);
 			if (instance->_list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->_list[key]);
-				const F& func = (*obj)();
-				return [&caller, &func](T... args) {func(caller, args...); };
+				const F& func = obj->get();
+				return [&caller, &func](T... args) {func(caller, std::forward<T>(args)...); };
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
@@ -141,7 +142,7 @@ namespace jmadf {
 
 		static void call(JInterface* instance, const juce::String& caller, const juce::String& key, T ...args)
 		{
-			JInterfaceDao<T...>::get(instance, caller, key)(args...);
+			JInterfaceDao<T...>::get(instance, caller, key)(std::forward<T>(args)...);
 		};
 	};//常态化接口数据访问对象
 
@@ -166,7 +167,7 @@ namespace jmadf {
 			juce::ScopedReadLock locker(instance->_lock);
 			if (instance->_list.contains(key)) {
 				U* obj = reinterpret_cast<U*>(instance->_list[key]);
-				const F& func = (*obj)();
+				const F& func = obj->get();
 				return [&caller, &func] {func(caller); };
 			}
 			else {

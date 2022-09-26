@@ -90,7 +90,7 @@ namespace jmadf
 			if (!pInterface) {
 				return;
 			}
-			JInterfaceDao<T...>::call(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key, args...);
+			JInterfaceDao<T...>::call(pInterface, ModuleStatics::getInfo()->ptrInfo->id, key, std::forward<T>(args)...);
 		};
 	};
 
