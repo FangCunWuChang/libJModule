@@ -5,6 +5,11 @@
 
 namespace jmadf {
 	namespace inside {
+		template<typename ...T>
+		static void emptyF(T...) {};//空函数
+
+		static void emptyF_void() {};//void参数空函数
+
 		class CallBackObjectBase
 		{
 		public:
@@ -32,7 +37,7 @@ namespace jmadf {
 			{
 				if (strcmp(this->_typename, typeid(F).name()) != 0) {
 					jassertfalse;//Interface args type isn't matched!
-					static F _empty = [](const juce::String&, T...) {};
+					static F _empty = emptyF<const juce::String&, T...>;
 					return _empty;
 				}
 				return this->_data;
@@ -51,7 +56,6 @@ namespace jmadf {
 			using F = std::function<void(const juce::String&)>;
 			const F _data;
 			const char* _typename;
-			const F _empty;
 
 		public:
 			explicit CallBackObject(const F& data)
@@ -64,7 +68,7 @@ namespace jmadf {
 			{
 				if (strcmp(this->_typename, typeid(F).name()) != 0) {
 					jassertfalse;//Interface args type isn't matched!
-					static F _empty = [](const juce::String&) {};
+					static F _empty = emptyF<const juce::String&>;
 					return _empty;
 				}
 				return this->_data;
@@ -121,7 +125,7 @@ namespace jmadf {
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
-				return [](T...) {};
+				return inside::emptyF<T...>;
 			}
 		};
 		static bool check(JInterface* instance, const juce::String& key)
@@ -172,7 +176,7 @@ namespace jmadf {
 			}
 			else {
 				jassertfalse;//Interface isn't exists!
-				return [] {};
+				return inside::emptyF_void;
 			}
 		};
 		static bool check(JInterface* instance, const juce::String& key)
