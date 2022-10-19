@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 #include "JInterface.h"
 #include "ModuleInfo.h"
+#include "Utils.h"
 
 //传入给模块的框架功能接口
 
@@ -27,6 +28,11 @@ namespace jmadf
 		void (*raiseExceptionFunc)(const juce::String&) = nullptr;
 		const juce::String (*getExceptionFunc)() = nullptr;
 		void (*clearExceptionFunc)() = nullptr;
+
+		void (*setLoadHookFunc)(const juce::String&, const HookFunction&) = nullptr;
+		void (*setUnloadHookFunc)(const juce::String&, const HookFunction&) = nullptr;
+		void (*setLoadCallbackFunc)(const juce::String&, const HookFunction&) = nullptr;
+		void (*setUnloadCallbackFunc)(const juce::String&, const HookFunction&) = nullptr;
 
 		JInterface* (*getInterfaceFunc)(const juce::String&) = nullptr;
 

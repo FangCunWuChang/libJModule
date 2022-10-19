@@ -21,6 +21,11 @@ namespace jmadf
 	void RaiseException(const juce::String& exception);
 	const juce::String GetException();
 	void ClearException();
+
+	void SetLoadHook(const HookFunction& hook);
+	void SetUnloadHook(const HookFunction& hook);
+	void SetLoadCallback(const HookFunction& hook);
+	void SetUnloadCallback(const HookFunction& hook);
 	
 	template<typename ...T, class F = std::function<void(const juce::String&, T...)>>
 	void RegisterInterface(

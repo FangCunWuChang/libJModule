@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 #include "StaticInterface.h"
 #include "ModuleStatics.h"
+#include "Utils.h"
 
 //提供给模块内部的接口管理类
 
@@ -15,6 +16,11 @@ namespace jmadf
 
 		static void init(const StaticInterface* pStaticInterface);
 		static void destory();
+
+		static void setLoadHook(const HookFunction& hook);
+		static void setUnloadHook(const HookFunction& hook);
+		static void setLoadCallback(const HookFunction& hook);
+		static void setUnloadCallback(const HookFunction& hook);
 		
 		static const StaticInterface* pStaticInterface;
 

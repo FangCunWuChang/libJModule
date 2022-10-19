@@ -1,4 +1,4 @@
-#include "Methods.h"
+﻿#include "Methods.h"
 #include "ModuleLoader.h"
 #include "Exceptions.h"
 #include "ModuleStatics.h"
@@ -53,6 +53,26 @@ namespace jmadf
 	void ClearException()
 	{
 		Exceptions::clearException();
+	}
+
+	void SetLoadHook(const HookFunction& hook)
+	{
+		Interfaces::setLoadHook(hook);
+	}
+
+	void SetUnloadHook(const HookFunction& hook)
+	{
+		Interfaces::setUnloadHook(hook);
+	}
+
+	void SetLoadCallback(const HookFunction& hook)
+	{
+		Interfaces::setLoadCallback(hook);
+	}
+
+	void SetUnloadCallback(const HookFunction& hook)
+	{
+		Interfaces::setUnloadCallback(hook);
 	}
 
 	const ModuleInfo* GetModuleInfo()
